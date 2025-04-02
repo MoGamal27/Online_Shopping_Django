@@ -1,25 +1,25 @@
+import uuid
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    
-    
-    def __str__(self):
-        return self.name
-    
-    
+class User(AbstractUser):
+    pass
+
+
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    image = models.ImageField(upload_to='products/')
-    available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField()
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
+
+    @property
+    def in_stock(self):
+        return self.stock > 0
     
     def __str__(self):
         return self.name
+        
+            
         
