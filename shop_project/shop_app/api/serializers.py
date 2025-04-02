@@ -1,15 +1,28 @@
+from django.db import transaction
 from rest_framework import serializers
-from shop_app.models import Category, Product
+from .models import User, Product
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = '__all__'
-        
-        
+        model = User
+        fields = ('password', 'user_permissions', 'is_authenticated', 'get_full_name', 'orders')
+        # exclude = ('password', 'user_permissions')
+        # fields = '__all__'     
+
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source="category.name")
     class Meta:
         model = Product
-        fields = '__all__'        
+        fields = (
+            'description',
+            'name',
+            'price',
+            'stock',
+        )
+
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                "Price must be greater than 0."
+            )
+        return value        
